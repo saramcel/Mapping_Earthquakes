@@ -39,12 +39,38 @@ L.control.layers(baseMaps).addTo(map);
 let earthquakes7Days = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 // Grabbing our GeoJSON data. 
-// This makes a promise and then you have to do a function to get anything done with the data. Ugh.
-// Grabbing our GeoJSON data.
 d3.json(earthquakes7Days).then(function(data) {
   console.log(data);
-// Creating a GeoJSON layer with the retrieved data.
-L.geoJSON(data).addTo(map);
-
+  
+  //styling goes here this time I guess
+  function styleInfo(feature) {
+    return {
+      opacity: 1,
+      fillOpacity: 1,
+      fillColor: "#ffae42",
+      color: "#000000",
+      radius: getRadius(feature.properties.mag),
+      stroke: true,
+      weight: 0.5
+    }
+  
+    // Earthquakes with a magnitude of 0 will be plotted with a radius of 1.
+    function getRadius(magnitude) {
+      if (magnitude === 0) {
+       return 1;
+      }
+      return magnitude * 4;
+    }
+}
+  // Creating a GeoJSON layer with the retrieved data.
+L.geoJSON(data, {
+    // We turn each feature into a circleMarker on the map.
+    pointToLayer: function(feature, latlng) {
+              console.log(data);
+              return L.circleMarker(latlng);
+          },
+          style: styleInfo
+      }).addTo(map);
 });
+
 
